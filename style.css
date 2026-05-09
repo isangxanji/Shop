@@ -1615,3 +1615,158 @@ textarea {
     cursor: pointer;
     font-size: 14px;
 }
+
+
+/*seller*/
+/* Shop Dashboard Containers */
+.shop-dashboard {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Common Banner Card (The Red Box) */
+.shop-banner-card {
+    background: #723e2a;
+    border-radius: 15px;
+    padding: 25px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* --- STATE: NO SHOP (Empty) --- */
+.shop-banner-empty {
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.shop-banner-empty .shop-icon-wrapper {
+    margin-bottom: 15px;
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 50%;
+}
+
+.create-shop-btn {
+    background: white;
+    color: #723e2a;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.create-shop-btn:hover {
+    background: #f4f4f4;
+    transform: translateY(-2px);
+}
+
+/* --- STATE: SHOP EXISTS --- */
+.shop-info-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.shop-header-flex {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.shop-details h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.status-indicator.active {
+    background: #99ffcc;
+    color: #006633;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.shop-subtext {
+    margin: 5px 0 0 0;
+    opacity: 0.8;
+    font-size: 14px;
+}
+
+/* Metrics Grid inside Red Box */
+.shop-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.metric-item {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.metric-item i {
+    font-size: 20px;
+    color: #ffcc00;
+}
+
+.metric-val strong {
+    display: block;
+    font-size: 18px;
+}
+
+.metric-val small {
+    opacity: 0.7;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+/* Inventory Section */
+.inventory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    color: #333;
+}
+
+.add-product-btn {
+    background: #723e2a;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+}
+
+/* --- MODAL STYLES --- */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 450px;
+}

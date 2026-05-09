@@ -1,3 +1,26 @@
+<?php
+include 'includes/db.php';
+
+// Check if a category filter was clicked in the UI
+$where_clause = "";
+if (isset($_GET['cat_id'])) {
+    $cat_id = mysqli_real_escape_string($conn, $_GET['cat_id']);
+    $where_clause = " WHERE p.category_id = '$cat_id'";
+}
+
+// JOIN products with categories to get the 'category_name'
+$query = "SELECT p.*, c.category_name 
+          FROM products p 
+          LEFT JOIN categories c ON p.category_id = c.id 
+          $where_clause
+          ORDER BY p.id DESC";
+
+// Fetch products for the logged-in shop
+$products = mysqli_query($conn, "SELECT * FROM products WHERE shop_id = '$shop_id'");
+
+$home_products = mysqli_query($conn, $query);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -72,7 +95,36 @@
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
+
+        <div class="product-grid">
+            <?php if (mysqli_num_rows($home_products) > 0): ?>
+                <?php while($item = mysqli_fetch_assoc($home_products)): ?>
+                <div class="product-card">
+                    <div class="product-imag">
+                        <span class="badge">BEST SELLER</span>
+                        <img src="account/uploads/<?php echo $item['product_image']; ?>" alt="<?php echo htmlspecialchars($item['product_name']); ?>">
+                    </div>
+    
+                    <div class="product-info">
+                        <small class="category">
+                            <?php echo strtoupper(htmlspecialchars($item['category_name'])); ?>
+                        </small>
+                        <h4><?php echo htmlspecialchars($item['product_name']); ?></h4>
+                        <div class="rating">★★★★☆ <span>(312)</span></div>
+                        <p class="price">₱<?php echo number_format($item['product_price'], 2); ?></p>
+        
+                        <div class="card-btns">
+                            <button class="buy-now">Buy Now</button>
+                            <button class="add-cart">Add</button>
+                        </div>
+                    </div>
+                </div>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <p>No products available at the moment.</p>
+            <?php endif; ?>
+        </div>
     </section>
 
     <footer>
