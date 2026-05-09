@@ -1,3 +1,14 @@
+<?php
+session_start();
+include 'includes/db.php';
+
+// FIX: Define the missing variable $product_query
+$product_query = mysqli_query($conn, "SELECT * FROM products");
+
+// Optional: Count items for your "Showing X items" text
+$total_items = mysqli_num_rows($product_query);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -74,7 +85,21 @@
                     </div>
                 </div>
             </div>
-            </section>
+
+
+    <?php 
+    // Check if the query actually has results
+    if ($product_query && mysqli_num_rows($product_query) > 0): 
+        while($item = mysqli_fetch_assoc($product_query)): 
+            // This includes your Buy Now and Add to Cart forms
+            include 'includes/product_card.php'; 
+        endwhile; 
+    else: ?>
+        <p>No products found in the shop.</p>
+    <?php endif; ?>
+
+
+        </section>
     </main>
 
     </body>

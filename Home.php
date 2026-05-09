@@ -1,6 +1,14 @@
 <?php
 include 'includes/db.php';
 
+$shop_id = null;
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $shop_res = mysqli_query($conn, "SELECT id FROM shops WHERE user_id = '$user_id'");
+    if ($shop_row = mysqli_fetch_assoc($shop_res)) {
+        $shop_id = $shop_row['id'];
+    }
+}
 // Check if a category filter was clicked in the UI
 $where_clause = "";
 if (isset($_GET['cat_id'])) {
@@ -20,6 +28,7 @@ $products = mysqli_query($conn, "SELECT * FROM products WHERE shop_id = '$shop_i
 
 $home_products = mysqli_query($conn, $query);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -78,53 +87,18 @@ $home_products = mysqli_query($conn, $query);
             <button class="filter-btn">Electronics</button>
         </div>
 
-        <div class="product-grid">
-            <div class="product-card">
-                <div class="product-img">
-                    <span class="badge">BEST SELLER</span>
-                    <img src="https://via.placeholder.com/250x300" alt="Product">
-                </div>
-                <div class="product-info">
-                    <p class="category">MEN'S FASHION</p>
-                    <h3>Classic Navy Blazer</h3>
-                    <div class="rating">★★★★☆ <span>(312)</span></div>
-                    <p class="price">$129.99</p>
-                    <div class="card-btns">
-                        <button class="buy-now">Buy Now</button>
-                        <button class="add-cart"><i class="fa-solid fa-cart-plus"></i> Add</button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div class="product-grid">
-            <?php if (mysqli_num_rows($home_products) > 0): ?>
-                <?php while($item = mysqli_fetch_assoc($home_products)): ?>
-                <div class="product-card">
-                    <div class="product-imag">
-                        <span class="badge">BEST SELLER</span>
-                        <img src="account/uploads/<?php echo $item['product_image']; ?>" alt="<?php echo htmlspecialchars($item['product_name']); ?>">
-                    </div>
-    
-                    <div class="product-info">
-                        <small class="category">
-                            <?php echo strtoupper(htmlspecialchars($item['category_name'])); ?>
-                        </small>
-                        <h4><?php echo htmlspecialchars($item['product_name']); ?></h4>
-                        <div class="rating">★★★★☆ <span>(312)</span></div>
-                        <p class="price">₱<?php echo number_format($item['product_price'], 2); ?></p>
-        
-                        <div class="card-btns">
-                            <button class="buy-now">Buy Now</button>
-                            <button class="add-cart">Add</button>
-                        </div>
-                    </div>
-                </div>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <p>No products available at the moment.</p>
-            <?php endif; ?>
-        </div>
+             <?php 
+    // Check if the query actually has results
+    if ($home_products && mysqli_num_rows($home_products) > 0): 
+        while($item = mysqli_fetch_assoc($home_products)): 
+            // This includes your Buy Now and Add to Cart forms
+            include 'includes/product_card.php'; 
+        endwhile; 
+    else: ?>
+        <p>No products found in the shop.</p>
+    <?php endif; ?>
     </section>
 
     <footer>

@@ -1,3 +1,13 @@
+<?php
+session_start();
+include 'includes/db.php';
+
+// 1. Fetch products where category_id is '2' (Electronics)
+$query = "SELECT * FROM products WHERE category_id = '2'"; 
+$electronics_products = mysqli_query($conn, $query);
+$total_items = mysqli_num_rows($electronics_products);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,6 +88,18 @@
                     </div>
                 </div>
             </div>
+
+            <?php 
+    // Check if the query actually has results
+    if ($electronics_products && mysqli_num_rows($electronics_products) > 0): 
+        while($item = mysqli_fetch_assoc($electronics_products)): 
+            // This includes your Buy Now and Add to Cart forms
+            include 'includes/product_card.php'; 
+        endwhile; 
+    else: ?>
+        <p>No products found in the shop.</p>
+    <?php endif; ?>
+
             </section>
     </main>
 

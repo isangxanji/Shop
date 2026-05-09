@@ -1,3 +1,13 @@
+<?php
+session_start();
+include 'includes/db.php';
+
+// 1. Fetch products where category_id is '1' (Clothing)
+$query = "SELECT * FROM products WHERE category_id = '1'"; 
+$clothing_products = mysqli_query($conn, $query);
+$total_items = mysqli_num_rows($clothing_products);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,10 +15,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clothing | Lumine</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="clothing.css">
-    
 </head>
-<body>
+<body class="bg-light">
 
     <header>
         <nav class="navbar">
@@ -18,11 +26,8 @@
                 <li><a href="Shop.php">Shop</a></li>
                 <li><a href="Clothing.php" class="active">Clothing</a></li>
                 <li><a href="Electronics.php">Electronics</a></li>
-                <li><a href="MyAccount.php">My Account <i class="fa-solid fa-chevron-down"></i></a></li>
+                <li><a href="MyAccount.php">My Account</a></li>
             </ul>
-            <div class="nav-icons">
-                <i class="fa-solid fa-cart-shopping"></i>
-            </div>
         </nav>
     </header>
 
@@ -47,28 +52,24 @@
                 <button class="pill">Women's Fashion</button>
             </div>
             
-            <p class="item-count">Showing <strong>5</strong> clothing items</p>
+            <p class="item-count">Showing <strong><?php echo $total_items; ?></strong> clothing items</p>
         </section>
 
-        <section class="product-grid">
-            <div class="product-card">
-                <div class="product-img">
-                    <span class="badge">BEST SELLER</span>
-                    <img src="https://via.placeholder.com/250x300" alt="Clothing Item">
-                </div>
-                <div class="product-info">
-                    <p class="label">MEN'S FASHION</p>
-                    <h3>Classic Navy Blazer</h3>
-                    <div class="rating">★★★★☆ <span>(312)</span></div>
-                    <p class="price">$129.99</p>
-                    <div class="card-btns">
-                        <button class="btn-buy">Buy Now</button>
-                        <button class="btn-add">Add</button>
-                    </div>
-                </div>
-            </div>
-            </section>
-    </main>
+        <section class="shop-container">    
+            <div class="product-grid">
+                <?php 
+    // Check if the query actually has results
+    if ($clothing_products && mysqli_num_rows($clothing_products) > 0): 
+        while($item = mysqli_fetch_assoc($clothing_products)): 
+            // This includes your Buy Now and Add to Cart forms
+            include 'includes/product_card.php'; 
+        endwhile; 
+    else: ?>
+        <p>No products found in the shop.</p>
+    <?php endif; ?>
 
-    </body>
+            </div>
+        </section>
+    </main>
+</body>
 </html>

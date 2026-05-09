@@ -23,7 +23,28 @@ if (!$user) {
     exit();
 }
 
+$shop_check = mysqli_query($conn, "SELECT * FROM shops WHERE user_id = '$user_id'");
+$has_shop = mysqli_num_rows($shop_check) > 0;
+
+if ($has_shop){
+    $shop = mysqli_fetch_assoc($shop_check);
+}
 $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'profile';
+
+// order
+$order_query = "SELECT o.*, p.product_name, p.product_image 
+                FROM orders o 
+                JOIN products p ON o.product_id = p.id 
+                WHERE o.user_id = '$user_id' 
+                ORDER BY o.order_date DESC";
+$order_result = mysqli_query($conn, $order_query);
+
+// cart
+$cart_query = "SELECT c.*, p.product_name, p.product_image, p.product_price 
+               FROM cart c 
+               JOIN products p ON c.product_id = p.id 
+               WHERE c.user_id = '$user_id'";
+$cart_result = mysqli_query($conn, $cart_query);
 ?>
 
 <!DOCTYPE html>
@@ -107,6 +128,7 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'profile';
            
                 <a href="MyAccount.php?tab=sales" 
                         class="tab-btn <?= ($current_tab == 'sales') ? 'active' : '' ?>">Sales</a>
+                
                 </nav>
 
             <div class="tab-display-area">
@@ -117,6 +139,7 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'profile';
                 case 'shop':   include 'account/my_shop.php'; break;
                 case 'sales':  include 'account/my_sales.php'; break;
                 case 'add_product': include 'account/add_product.php'; break;
+                case 'create_shop': include 'account/create_shop.php'; break;
                 default:       include 'account/my_profile.php'; break;
                 }
                 ?>
@@ -125,5 +148,6 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'profile';
         </div>
     </main>
 
+    
     </body>
 </html>
