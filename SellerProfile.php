@@ -1,3 +1,11 @@
+<?php
+include 'includes/db.php'
+$id = mysqli_real_escape_string($conn, $_GET['id']);
+// Fetch shop info
+$shop = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM shops WHERE id = '$id'"));
+// Fetch only this shop's products
+$products = mysqli_query($conn, "SELECT * FROM products WHERE shop_id = '$id'");
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

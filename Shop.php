@@ -7,6 +7,25 @@ $product_query = mysqli_query($conn, "SELECT * FROM products");
 
 // Optional: Count items for your "Showing X items" text
 $total_items = mysqli_num_rows($product_query);
+
+if (isset($_GET['delete_id'])) {
+    $product_id = mysqli_real_escape_string($conn, $_GET['delete_id']);
+    
+    // JOIN products with shops to verify the owner
+    $delete_query = "DELETE p FROM products p 
+                     JOIN shops s ON p.shop_id = s.id 
+                     WHERE p.id = '$product_id' AND s.user_id = '$user_id'";
+    
+    if (mysqli_query($conn, $delete_query)) {
+        header("Location: my_shop.php?msg=deleted");
+    }
+}
+
+$query = "SELECT p.*, s.shop_name 
+          FROM products p 
+          JOIN shops s ON p.shop_id = s.id";
+
+$result = mysqli_query($conn, $query);
 ?>
 
 <!DOCTYPE html>
@@ -58,39 +77,14 @@ $total_items = mysqli_num_rows($product_query);
                 </div>
             </div>
 
-            <div class="category-filters">
-                <button class="filter-btn active">All</button>
-                <button class="filter-btn">Men's Fashion</button>
-                <button class="filter-btn">Women's Fashion</button>
-                <button class="filter-btn">Electronics</button>
-            </div>
-
             <p class="results-count"><strong>8</strong> products found</p>
         </section>
 
         <section class="product-grid">
-            <div class="product-card">
-                <div class="product-img">
-                    <span class="badge">BEST SELLER</span>
-                    <img src="https://via.placeholder.com/250x300" alt="Navy Blazer">
-                </div>
-                <div class="product-info">
-                    <p class="category">MEN'S FASHION</p>
-                    <h3>Classic Navy Blazer</h3>
-                    <div class="rating">★★★★☆ <span>(312)</span></div>
-                    <p class="price">$129.99</p>
-                    <div class="card-btns">
-                        <button class="buy-now">Buy Now</button>
-                        <button class="add-cart">Add</button>
-                    </div>
-                </div>
-            </div>
-
-
     <?php 
     // Check if the query actually has results
     if ($product_query && mysqli_num_rows($product_query) > 0): 
-        while($item = mysqli_fetch_assoc($product_query)): 
+        while($item = mysqli_fetch_assoc($result)): 
             // This includes your Buy Now and Add to Cart forms
             include 'includes/product_card.php'; 
         endwhile; 

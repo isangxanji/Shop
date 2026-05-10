@@ -2,10 +2,14 @@
 session_start();
 include 'includes/db.php';
 
-// 1. Fetch products where category_id is '1' (Clothing)
-$query = "SELECT * FROM products WHERE category_id = '1'"; 
-$clothing_products = mysqli_query($conn, $query);
-$total_items = mysqli_num_rows($clothing_products);
+// Optimized Electronics.php (Same for Clothing)
+$query = "SELECT p.*, s.shop_name 
+          FROM products p 
+          JOIN shops s ON p.shop_id = s.id 
+          WHERE p.category_id = 1"; // Use 2 for Clothing
+$result = mysqli_query($conn, $query);
+$total_items = mysqli_num_rows($result); // Get the count from the correct query
+
 ?>
 
 <!DOCTYPE html>
@@ -46,12 +50,6 @@ $total_items = mysqli_num_rows($clothing_products);
                 <input type="text" placeholder="Search clothing items...">
             </div>
             
-            <div class="sub-categories">
-                <button class="pill active">All Clothing</button>
-                <button class="pill">Men's Fashion</button>
-                <button class="pill">Women's Fashion</button>
-            </div>
-            
             <p class="item-count">Showing <strong><?php echo $total_items; ?></strong> clothing items</p>
         </section>
 
@@ -59,8 +57,8 @@ $total_items = mysqli_num_rows($clothing_products);
             <div class="product-grid">
                 <?php 
     // Check if the query actually has results
-    if ($clothing_products && mysqli_num_rows($clothing_products) > 0): 
-        while($item = mysqli_fetch_assoc($clothing_products)): 
+    if ($result && mysqli_num_rows($result) > 0): 
+        while($item = mysqli_fetch_assoc($result)): 
             // This includes your Buy Now and Add to Cart forms
             include 'includes/product_card.php'; 
         endwhile; 

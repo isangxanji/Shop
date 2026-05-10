@@ -7,31 +7,73 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-//fetch information from db
 $user_id = $_SESSION['user_id'];
-$query = "SELECT * FROM users WHERE id = ?"; 
-$stmt = $conn->prepare($query);
+
+// --- 1. HANDLE PROFILE & PASSWORD UPDATES ---
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
+    $full_name = mysqli_real_escape_string($conn, $_POST['full_name']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $phone = mysqli_real_escape_string($conn, $_POST['phone']);
+    $address = mysqli_real_escape_string($conn, $_POST['address']);
+    $bio = mysqli_real_escape_string($conn, $_POST['bio']);
+    
+    $current_pw = $_POST['current_password'] ?? '';
+    $new_pw = $_POST['new_password'] ?? '';
+
+    // Check if the email is already used by another user
+    $check_email = "SELECT id FROM users WHERE email = '$email' AND id != '$user_id'";
+    $email_result = mysqli_query($conn, $check_email);
+
+    if (mysqli_num_rows($email_result) > 0) {
+        $_SESSION['error_msg'] = "Error: That email is already registered to another account.";
+        header("Location: MyAccount.php?tab=edit_profile");
+        exit();
+    } 
+
+    $password_updated = false;
+    // Handle Password Change if the user filled in a new password
+    if (!empty($new_pw)) {
+        $pw_res = mysqli_query($conn, "SELECT password FROM users WHERE id = '$user_id'");
+        $pw_row = mysqli_fetch_assoc($pw_res);
+
+        if (password_verify($current_pw, $pw_row['password'])) {
+            $hashed_pw = password_hash($new_pw, PASSWORD_DEFAULT);
+            mysqli_query($conn, "UPDATE users SET password = '$hashed_pw' WHERE id = '$user_id'");
+            $password_updated = true;
+        } else {
+            $_SESSION['error_msg'] = "Current password was incorrect. Profile not updated.";
+            header("Location: MyAccount.php?tab=edit_profile");
+            exit();
+        }
+    }
+
+    // Update General Profile Info
+    $sql = "UPDATE users SET 
+            full_name = '$full_name', email = '$email', 
+            phone = '$phone', address = '$address', bio = '$bio' 
+            WHERE id = '$user_id'";
+
+    if (mysqli_query($conn, $sql)) {
+        $_SESSION['success_msg'] = $password_updated ? "Profile and password updated!" : "Profile updated successfully!";
+        header("Location: MyAccount.php?tab=profile");
+        exit();
+    }
+}
+
+// --- 2. FETCH FRESH USER DATA ---
+$user_query = "SELECT * FROM users WHERE id = ?"; 
+$stmt = $conn->prepare($user_query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
+$user = $stmt->get_result()->fetch_assoc();
 
-//if wala sa db and user
 if (!$user) {
     session_destroy();
     header("Location: login.php");
     exit();
 }
 
-$shop_check = mysqli_query($conn, "SELECT * FROM shops WHERE user_id = '$user_id'");
-$has_shop = mysqli_num_rows($shop_check) > 0;
-
-if ($has_shop){
-    $shop = mysqli_fetch_assoc($shop_check);
-}
-$current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'profile';
-
-// order
+// Fetch Orders for the Orders Tab
 $order_query = "SELECT o.*, p.product_name, p.product_image 
                 FROM orders o 
                 JOIN products p ON o.product_id = p.id 
@@ -39,12 +81,19 @@ $order_query = "SELECT o.*, p.product_name, p.product_image
                 ORDER BY o.order_date DESC";
 $order_result = mysqli_query($conn, $order_query);
 
-// cart
+// Fetch Cart for the Cart display (if needed)
 $cart_query = "SELECT c.*, p.product_name, p.product_image, p.product_price 
                FROM cart c 
                JOIN products p ON c.product_id = p.id 
                WHERE c.user_id = '$user_id'";
 $cart_result = mysqli_query($conn, $cart_query);
+
+// Fetch other dashboard data (Shop, Orders, Cart)
+$shop_check = mysqli_query($conn, "SELECT * FROM shops WHERE user_id = '$user_id'");
+$has_shop = mysqli_num_rows($shop_check) > 0;
+if ($has_shop) { $shop = mysqli_fetch_assoc($shop_check); }
+
+$current_tab = $_GET['tab'] ?? 'profile';
 ?>
 
 <!DOCTYPE html>
@@ -117,8 +166,8 @@ $cart_result = mysqli_query($conn, $cart_query);
 
             <section class="account-content">
                 <nav class="tab-nav">
-                    <a href="MyAccount.php?tab=profile" 
-                       class="tab-btn <?= ($current_tab == 'profile') ? 'active' : '' ?>">Profile</a>
+                <a href="MyAccount.php?tab=profile" 
+                       class="tab-btn <?= ($current_tab == 'profile' || $current_tab == 'edit_profile') ? 'active' : '' ?>">Profile</a>
            
                 <a href="MyAccount.php?tab=orders" 
                     class="tab-btn <?= ($current_tab == 'orders') ? 'active' : '' ?>">My Orders</a>
@@ -140,6 +189,9 @@ $cart_result = mysqli_query($conn, $cart_query);
                 case 'sales':  include 'account/my_sales.php'; break;
                 case 'add_product': include 'account/add_product.php'; break;
                 case 'create_shop': include 'account/create_shop.php'; break;
+                case 'edit_profile': include 'account/edit_profile.php'; break;
+                case 'orders':      include 'account/my_order.php'; break;
+                case 'shop':        include 'account/my_shop.php'; break;
                 default:       include 'account/my_profile.php'; break;
                 }
                 ?>

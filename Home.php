@@ -8,6 +8,8 @@ if (isset($_SESSION['user_id'])) {
     if ($shop_row = mysqli_fetch_assoc($shop_res)) {
         $shop_id = $shop_row['id'];
     }
+
+    
 }
 // Check if a category filter was clicked in the UI
 $where_clause = "";
@@ -27,6 +29,14 @@ $query = "SELECT p.*, c.category_name
 $products = mysqli_query($conn, "SELECT * FROM products WHERE shop_id = '$shop_id'");
 
 $home_products = mysqli_query($conn, $query);
+
+$query = "SELECT p.*, s.shop_name 
+          FROM products p 
+          JOIN shops s ON p.shop_id = s.id 
+          ORDER BY p.items_sold DESC LIMIT 8";
+
+$result = mysqli_query($conn, $query);
+
 ?>
 
 
@@ -77,22 +87,22 @@ $home_products = mysqli_query($conn, $query);
                 <p class="top-selling"><i class="fa-solid fa-chart-line"></i> TOP SELLING</p>
                 <h2>Best Sellers</h2>
             </div>
-            <a href="#" class="view-all">View All Products <i class="fa-solid fa-arrow-right"></i></a>
+            <a href="Shop.php" class="view-all">View All Products <i class="fa-solid fa-arrow-right"></i></a>
         </div>
 
-        <div class="filters">
+        <!--<div class="filters">
             <button class="filter-btn active">All</button>
             <button class="filter-btn">Men's Fashion</button>
             <button class="filter-btn">Women's Fashion</button>
             <button class="filter-btn">Electronics</button>
-        </div>
+        </div>-->
 
 
         <div class="product-grid">
              <?php 
     // Check if the query actually has results
     if ($home_products && mysqli_num_rows($home_products) > 0): 
-        while($item = mysqli_fetch_assoc($home_products)): 
+        while($item = mysqli_fetch_assoc($result)): 
             // This includes your Buy Now and Add to Cart forms
             include 'includes/product_card.php'; 
         endwhile; 

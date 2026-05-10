@@ -2199,3 +2199,132 @@ textarea {
 
 .buy-now:hover { background-color: #36201f; }
 .add-cart:hover { background-color: #fdf5f0; }
+
+
+/*edit profile*/
+/* Container for the Edit Form */
+.edit-profile-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    font-family: 'Poppins', sans-serif; /* Matches your dashboard */
+}
+
+/* Header Styling */
+.card-header {
+    border-bottom: 2px solid #f1f1f1;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+}
+
+.card-header h3 {
+    color: #4a2c2a; /* Lumine Signature Brown */
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Grid Layout */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Labels */
+.info-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Inputs and Textareas */
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 15px;
+    color: #4a2c2a;
+}
+
+.info-group input, 
+.info-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #fafafa;
+}
+
+.input-with-icon input {
+    padding-left: 45px; /* Space for the icon */
+}
+
+.info-group input:focus, 
+.info-group textarea:focus {
+    border-color: #4a2c2a;
+    background-color: #fff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 44, 42, 0.1);
+}
+
+/* Form Actions (Buttons) */
+.form-actions {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #f1f1f1;
+    padding-top: 20px;
+}
+
+.btn-save {
+    background-color: #4a2c2a;
+    color: #fff;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-save:hover {
+    background-color: #361f1e;
+}
+
+.btn-cancel {
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.btn-cancel:hover {
+    color: #4a2c2a !important;
+}
+
+/* Responsive for Mobile */
+@media (max-width: 600px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    .info-group {
+        grid-column: span 1 !important;
+    }
+}
