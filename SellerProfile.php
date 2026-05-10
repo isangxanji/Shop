@@ -1,11 +1,18 @@
 <?php
-include 'includes/db.php'
+include 'includes/db.php';
 $id = mysqli_real_escape_string($conn, $_GET['id']);
+
 // Fetch shop info
-$shop = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM shops WHERE id = '$id'"));
-// Fetch only this shop's products
-$products = mysqli_query($conn, "SELECT * FROM products WHERE shop_id = '$id'");
+$shop_res = mysqli_query($conn, "SELECT * FROM shops WHERE id = '$id'");
+$shop = mysqli_fetch_assoc($shop_res);
+
+// Fetch only ACTIVE products for this specific shop
+$products = mysqli_query($conn, "SELECT * FROM products WHERE shop_id = '$id' AND is_deleted = 0");
+$products_query = "SELECT * FROM products WHERE shop_id = '$id' AND is_deleted = 0";
+$products = mysqli_query($conn, $products_query);
+$total_items = mysqli_num_rows($products);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,18 +46,18 @@ $products = mysqli_query($conn, "SELECT * FROM products WHERE shop_id = '$id'");
             </div>
             <div class="store-details">
                 <div class="title-row">
-                    <h1>StyleHouse PH</h1>
+                    <h1><?= htmlspecialchars($shop['shop_name']) ?></h1>
                     <span class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified</span>
                 </div>
                 <p class="member-info">Member since 2021 • BGC, Taguig</p>
-                <p class="store-bio">Premium menswear curated for the modern Filipino gentleman. Quality you can feel, style you can trust.</p>
+                <p class="store-bio"><?= htmlspecialchars($shop['shop_description']) ?>.</p>
             </div>
         </div>
 
         <div class="seller-stats">
             <div class="stat-item">
                 <i class="fa-solid fa-box-archive"></i>
-                <div class="stat-val">2</div>
+                <div class="stat-val"><?= mysqli_num_rows($products) ?></div>
                 <div class="stat-label">Products</div>
             </div>
             <div class="stat-item">
@@ -84,39 +91,29 @@ $products = mysqli_query($conn, "SELECT * FROM products WHERE shop_id = '$id'");
         </div>
 
         <section class="product-grid">
+    <?php if ($products && mysqli_num_rows($products) > 0): ?>
+        <?php while($item = mysqli_fetch_assoc($products)): ?>
             <div class="product-card">
                 <div class="product-img">
-                    <span class="badge">BEST SELLER</span>
-                    <img src="https://via.placeholder.com/250x300" alt="Navy Blazer">
+                    <img src="uploads/<?= $item['product_image'] ?>" alt="<?= htmlspecialchars($item['product_name']) ?>">
                 </div>
                 <div class="product-info">
-                    <p class="label">MEN'S FASHION</p>
-                    <h3>Classic Navy Blazer</h3>
-                    <div class="rating">★★★★☆ <span>(312)</span></div>
-                    <p class="price">$129.99</p>
+                    <p class="label">PRODUCT</p>
+                    <h3><?= htmlspecialchars($item['product_name']) ?></h3>
+                    <p class="price">₱<?= number_format($item['product_price'], 2) ?></p>
                     <div class="card-btns">
                         <button class="btn-buy">Buy Now</button>
                         <button class="btn-add">Add</button>
                     </div>
                 </div>
             </div>
-            <div class="product-card">
-                <div class="product-img">
-                    <span class="badge premium">PREMIUM</span>
-                    <img src="https://via.placeholder.com/250x300" alt="Formal Suit">
-                </div>
-                <div class="product-info">
-                    <p class="label">MEN'S FASHION</p>
-                    <h3>Premium Formal Suit</h3>
-                    <div class="rating">★★★★★ <span>(412)</span></div>
-                    <p class="price">$249.99</p>
-                    <div class="card-btns">
-                        <button class="btn-buy">Buy Now</button>
-                        <button class="btn-add">Add</button>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <div class="no-products">
+            <p>This shop hasn't listed any products yet.</p>
+        </div>
+    <?php endif; ?>
+</section>
     </main>
 
     </body>

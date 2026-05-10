@@ -1,4 +1,5 @@
 <?php
+session_start(); // Ensure session is started if not already
 include 'includes/db.php';
 
 $shop_id = null;
@@ -8,35 +9,32 @@ if (isset($_SESSION['user_id'])) {
     if ($shop_row = mysqli_fetch_assoc($shop_res)) {
         $shop_id = $shop_row['id'];
     }
-
-    
-}
-// Check if a category filter was clicked in the UI
-$where_clause = "";
-if (isset($_GET['cat_id'])) {
-    $cat_id = mysqli_real_escape_string($conn, $_GET['cat_id']);
-    $where_clause = " WHERE p.category_id = '$cat_id'";
 }
 
-// JOIN products with categories to get the 'category_name'
+// 1. Build the Main Products Query (with is_deleted filter)
 $query = "SELECT p.*, c.category_name 
           FROM products p 
           LEFT JOIN categories c ON p.category_id = c.id 
-          $where_clause
-          ORDER BY p.id DESC";
+          WHERE p.is_deleted = 0"; // Basic filter: only show non-deleted items
 
-// Fetch products for the logged-in shop
-$products = mysqli_query($conn, "SELECT * FROM products WHERE shop_id = '$shop_id'");
+// 2. Append Category Filter if active
+if (isset($_GET['cat_id'])) {
+    $cat_id = mysqli_real_escape_string($conn, $_GET['cat_id']);
+    $query .= " AND p.category_id = '$cat_id'";
+}
 
+$query .= " ORDER BY p.id DESC";
 $home_products = mysqli_query($conn, $query);
 
-$query = "SELECT p.*, s.shop_name 
-          FROM products p 
-          JOIN shops s ON p.shop_id = s.id 
-          ORDER BY p.items_sold DESC LIMIT 8";
+// 3. Update the Second Query (Top/Featured Items)
+// You MUST add WHERE p.is_deleted = 0 here too, otherwise they show up in the top list!
+$top_query = "SELECT p.*, s.shop_name 
+              FROM products p 
+              JOIN shops s ON p.shop_id = s.id 
+              WHERE p.is_deleted = 0
+              ORDER BY p.items_sold DESC LIMIT 8";
 
-$result = mysqli_query($conn, $query);
-
+$result = mysqli_query($conn, $top_query);
 ?>
 
 

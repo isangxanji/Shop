@@ -10,6 +10,7 @@ $total_items = mysqli_num_rows($product_query);
 
 if (isset($_GET['delete_id'])) {
     $product_id = mysqli_real_escape_string($conn, $_GET['delete_id']);
+    $user_id = $_SESSION['user_id'];
     
     // JOIN products with shops to verify the owner
     $delete_query = "DELETE p FROM products p 
@@ -17,16 +18,19 @@ if (isset($_GET['delete_id'])) {
                      WHERE p.id = '$product_id' AND s.user_id = '$user_id'";
     
     if (mysqli_query($conn, $delete_query)) {
-        header("Location: my_shop.php?msg=deleted");
+        header("Location: my_shop.php?msg=Product Deleted");
+        exit();
     }
 }
 
 $query = "SELECT p.*, s.shop_name 
           FROM products p 
-          JOIN shops s ON p.shop_id = s.id";
+          JOIN shops s ON p.shop_id = s.id
+          WHERE p.is_deleted = 0";
 
 $result = mysqli_query($conn, $query);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -83,7 +87,7 @@ $result = mysqli_query($conn, $query);
         <section class="product-grid">
     <?php 
     // Check if the query actually has results
-    if ($product_query && mysqli_num_rows($product_query) > 0): 
+    if ($result && mysqli_num_rows($result) > 0): 
         while($item = mysqli_fetch_assoc($result)): 
             // This includes your Buy Now and Add to Cart forms
             include 'includes/product_card.php'; 

@@ -47,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
         }
     }
 
+
     // Update General Profile Info
     $sql = "UPDATE users SET 
             full_name = '$full_name', email = '$email', 
@@ -57,6 +58,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
         $_SESSION['success_msg'] = $password_updated ? "Profile and password updated!" : "Profile updated successfully!";
         header("Location: MyAccount.php?tab=profile");
         exit();
+    }
+}
+
+if (isset($_GET['delete_id'])) {
+    $product_id = mysqli_real_escape_string($conn, $_GET['delete_id']);
+    $user_id = $_SESSION['user_id'];
+
+    // This query changes the 0 to 1 in your database
+    $delete_query = "UPDATE products p 
+                     JOIN shops s ON p.shop_id = s.id 
+                     SET p.is_deleted = 1 
+                     WHERE p.id = '$product_id' AND s.user_id = '$user_id'";
+    
+    if (mysqli_query($conn, $delete_query)) {
+        // Refresh to the shop tab to show it's gone
+        header("Location: MyAccount.php?tab=shop&success=deleted");
+        exit();
+    } else {
+        // Use this to see if there is a SQL error
+        die("Error deleting: " . mysqli_error($conn));
     }
 }
 
@@ -78,6 +99,7 @@ $order_query = "SELECT o.*, p.product_name, p.product_image
                 FROM orders o 
                 JOIN products p ON o.product_id = p.id 
                 WHERE o.user_id = '$user_id' 
+                AND p.is_deleted = 0
                 ORDER BY o.order_date DESC";
 $order_result = mysqli_query($conn, $order_query);
 
@@ -85,7 +107,8 @@ $order_result = mysqli_query($conn, $order_query);
 $cart_query = "SELECT c.*, p.product_name, p.product_image, p.product_price 
                FROM cart c 
                JOIN products p ON c.product_id = p.id 
-               WHERE c.user_id = '$user_id'";
+               WHERE c.user_id = '$user_id'
+               AND p.is_deleted = 0";
 $cart_result = mysqli_query($conn, $cart_query);
 
 // Fetch other dashboard data (Shop, Orders, Cart)
@@ -94,6 +117,7 @@ $has_shop = mysqli_num_rows($shop_check) > 0;
 if ($has_shop) { $shop = mysqli_fetch_assoc($shop_check); }
 
 $current_tab = $_GET['tab'] ?? 'profile';
+$edit_id = $_GET['edit_id'] ?? null;
 ?>
 
 <!DOCTYPE html>
@@ -173,7 +197,7 @@ $current_tab = $_GET['tab'] ?? 'profile';
                     class="tab-btn <?= ($current_tab == 'orders') ? 'active' : '' ?>">My Orders</a>
            
                 <a href="MyAccount.php?tab=shop" 
-                    class="tab-btn <?= ($current_tab == 'shop' || $current_tab == 'add_product') ? 'active' : '' ?>">My Shop</a>
+                    class="tab-btn <?= ($current_tab == 'shop' || $current_tab == 'add_product' || isset($_GET['edit_id'])) ? 'active' : '' ?>">My Shop</a>
            
                 <a href="MyAccount.php?tab=sales" 
                         class="tab-btn <?= ($current_tab == 'sales') ? 'active' : '' ?>">Sales</a>

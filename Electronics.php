@@ -7,7 +7,7 @@ include 'includes/db.php';
 $query = "SELECT p.*, s.shop_name 
           FROM products p 
           JOIN shops s ON p.shop_id = s.id 
-          WHERE p.category_id = 2"; // Use 2
+          WHERE p.category_id = 2 AND p.is_deleted = 0"; // Use 2
 $result = mysqli_query($conn, $query);
 $total_items = mysqli_num_rows($result); // Get the count from the correct query
 
