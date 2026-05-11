@@ -44,6 +44,126 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShopEase - Create Account</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* --- Main Container --- */
+    .signup-container {
+        min-height: calc(100vh - 72px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 8%;
+      background: linear-gradient(135deg, #F9F7F5 0%, #F4ECE6 100%);
+    }
+    /*min-height: calc(100vh - 65px);
+    }
+
+    /* --- Signup Box (The Card) --- */
+    .signup-box {
+        width: 100%;
+      max-width: 460px;
+      background: #fff;
+      padding: 38px;
+      border-radius: 18px;
+      border: 1px solid #eee;
+      box-shadow: 0 20px 45px rgba(93, 42, 24, 0.12);
+    }
+
+    .signup-box h2 {
+        color: #4B2416;
+      font-family: Georgia, serif;
+      font-size: 32px;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    /* --- Form Elements --- */
+    label {
+        display: block;
+      font-size: 12px;
+      font-weight: bold;
+      color: #555;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input {
+        width: 100%;
+      padding: 13px 14px;
+      margin-bottom: 18px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus {
+        border-color: #A67558;
+      box-shadow: 0 0 0 3px rgba(166, 117, 88, 0.15);
+    }
+
+    /* --- Register Button --- */
+    button[type="submit"] {
+        width: 100%;
+      border: none;
+      border-radius: 10px;
+      padding: 13px;
+      background: #4B2416;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s ease;
+      margin-top: 4px;
+    }
+
+    button[type="submit"]:hover {
+        background: #7C442A;
+      transform: translateY(-1px);
+    }
+
+    /* --- Footer Links --- */
+    .terms {
+        text-align: center;
+      color: #777;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 18px;
+    }
+
+    .terms a {
+        color: #7C442A;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-link {
+        text-align: center;
+      color: #777;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 18px;
+    }
+
+    .login-link a {
+        color: #4B2416;
+      text-decoration: underline;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+
+    /* Custom Error Message */
+    p[style*="color: #e74c3c"] {
+        background-color: #fff5f5;
+        border: 1px solid #fed7d7;
+        padding: 10px;
+        border-radius: 6px;
+        text-align: center;
+    }
+</style>
+</style>
 </head>
 <body>
   <header class="navbar">
@@ -63,7 +183,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </header>
 
   <main class="signup-container">
-    <form class="signup-box" action ="signin.php" method="POST">
+    <form class="signup-box" action ="login.php" method="POST">
 
       <h2>Create Your Account</h2>
       <?php if(isset($error)): ?>
@@ -89,7 +209,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </p>
 
       <p class="login-link">
-        Already have an account? <a href="login.html">Log in ›</a>
+        Already have an account? <a href="login.php">Log in ›</a>
       </p>
     </form>
   </main>
